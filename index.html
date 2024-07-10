@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase Authentication Example</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Login</h1>
+      <button id="google-login-btn">Login with Google</button>
+      <p id="login-message"></p>
+      <button id="logout-btn" style="display: none">Logout</button>
+    </div>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+      import {
+        getAuth,
+        signInWithPopup,
+        GoogleAuthProvider,
+        signOut,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBe6DVRwT8tVwVEPmHVbIRmKDojTAtCbEI",
+        authDomain: "test-2d8c5.firebaseapp.com",
+        projectId: "test-2d8c5",
+        storageBucket: "test-2d8c5.appspot.com",
+        messagingSenderId: "69403972522",
+        appId: "1:69403972522:web:b0c1205268e22aca22d1d3",
+        measurementId: "G-C9XZXBDQTP",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const auth = getAuth();
+
+      // Elements
+      const googleLoginBtn = document.getElementById("google-login-btn");
+      const logoutBtn = document.getElementById("logout-btn");
+      const loginMessage = document.getElementById("login-message");
+
+      // Login event
+      googleLoginBtn.addEventListener("click", () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            loginMessage.textContent = `Welcome, ${result.user.displayName}`;
+            googleLoginBtn.style.display = "none";
+            logoutBtn.style.display = "block";
+          })
+          .catch((error) => {
+            loginMessage.textContent = `Error: ${error.message}`;
+          });
+      });
+
+      // Logout event
+      logoutBtn.addEventListener("click", () => {
+        signOut(auth).then(() => {
+          loginMessage.textContent = "You have logged out";
+          googleLoginBtn.style.display = "block";
+          logoutBtn.style.display = "none";
+        });
+      });
+
+      // Check user state
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          loginMessage.textContent = `Welcome, ${user.displayName}`;
+          googleLoginBtn.style.display = "none";
+          logoutBtn.style.display = "block";
+        } else {
+          loginMessage.textContent = "";
+          googleLoginBtn.style.display = "block";
+          logoutBtn.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
